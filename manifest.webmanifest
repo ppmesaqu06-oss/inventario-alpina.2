@@ -1,5 +1,4 @@
 {
-  "id": "/",
   "name": "OpsFlow · Alpina",
   "short_name": "OpsFlow",
   "description": "Recibo en ciego, inventario cíclico, isla y corta fecha y solicitud de bajas con escáner de código de barras.",
@@ -102,14 +101,17 @@
           "accept": [
             ".xlsx",
             ".xlsm",
+            ".xls",
             ".csv",
             ".txt",
+            ".xml",
+            ".html",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "application/vnd.ms-excel.sheet.macroEnabled.12",
             "application/vnd.ms-excel",
-            "text/csv",
-            "text/plain",
-            "application/octet-stream"
+            "application/octet-stream",
+            "application/*",
+            "text/*"
           ]
         }
       ]

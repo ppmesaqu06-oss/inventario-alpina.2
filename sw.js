@@ -1,7 +1,7 @@
 /* Service worker · ALPINA · TOMA DE INVENTARIO
    El nombre del cache lleva el sello de compilacion: cada build nuevo invalida
    el anterior y la app se actualiza sola en el celular.                        */
-var V = "2026.10.22.1518";
+var V = "2026.10.23.0701";
 var C = "alpina-inventario-" + V;
 var CS = "alpina-compartido";   /* bandeja de archivos recibidos con «Compartir» (WhatsApp, Meet, Drive…): NO se borra al actualizar */
 var ASSETS = ["./","./index.html","./manifest.webmanifest","./icon-192.png",

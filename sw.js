@@ -1,7 +1,7 @@
 /* Service worker · ALPINA · TOMA DE INVENTARIO
    El nombre del cache lleva el sello de compilacion: cada build nuevo invalida
    el anterior y la app se actualiza sola en el celular.                        */
-var V = "2026.10.24.1521";
+var V = "2026.10.24.1538";
 var C = "alpina-inventario-" + V;
 var CS = "alpina-compartido";   /* bandeja de archivos recibidos con «Compartir» (WhatsApp, Meet, Drive…): NO se borra al actualizar */
 var ASSETS = ["./","./index.html","./manifest.webmanifest","./icon-192.png",
@@ -9,7 +9,7 @@ var ASSETS = ["./","./index.html","./manifest.webmanifest","./icon-192.png",
 
 self.addEventListener("install", function(e){
   e.waitUntil(
-    caches.open(C).then(function(c){ return c.addAll(ASSETS); })
+    caches.open(C).then(function(c){ return c.addAll(ASSETS.map(function(u){ return new Request(u,{cache:"reload"}); })); })   /* «reload»: nunca guarda una copia vieja que tenga el navegador */
       .then(function(){ return self.skipWaiting(); })
       .catch(function(){ return self.skipWaiting(); })
   );
@@ -58,9 +58,11 @@ self.addEventListener("fetch", function(e){
 
   if(esPagina){
     /* La pagina siempre se pide primero a la red: asi el usuario ve la version nueva
-       apenas se publica, y si no hay señal cae al cache.                            */
+       apenas se publica, y si no hay señal cae al cache. «no-cache» = el navegador pregunta
+       al servidor si cambió (GitHub Pages guarda copias 10 min: sin esto, una versión recién
+       subida podía tardar ese tiempo en verse); si no cambió, responde sin bajar todo otra vez. */
     e.respondWith(
-      fetch(req).then(function(res){
+      fetch(req,{cache:"no-cache"}).then(function(res){
         var copy=res.clone();
         caches.open(C).then(function(c){ c.put("./index.html", copy); });
         return res;

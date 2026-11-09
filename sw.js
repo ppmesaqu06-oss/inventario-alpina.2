@@ -1,27 +1,20 @@
 /* Service worker · ALPINA · TOMA DE INVENTARIO
    El nombre del cache lleva el sello de compilacion: cada build nuevo invalida
    el anterior y la app se actualiza sola en el celular.                        */
-var V = "2026.11.08.2125";
+var V = "2026.11.08.2142";
 var C = "alpina-inventario-" + V;
 var CS = "alpina-compartido";   /* bandeja de archivos recibidos con «Compartir» (WhatsApp, Meet, Drive…): NO se borra al actualizar */
-var COCR = "alpina-ocr-t511-eng";  /* lector de texto (~8 MB): se baja UNA vez y sobrevive a las actualizaciones; cambiar el nombre solo si cambia el lector */
+var COCR = "alpina-ocr-t511-bin";  /* lector de texto (carpeta ocr/, ~4 MB): se baja UNA vez, solo si se usa el proceso 6, y sobrevive a las actualizaciones */
 var ASSETS = ["./","./index.html","./manifest.webmanifest","./icon-192.png",
               "./icon-512.png","./icon-maskable.png","./apple-touch-icon.png"];
 
 self.addEventListener("install", function(e){
   e.waitUntil(
     caches.open(C).then(function(c){ return c.addAll(ASSETS.map(function(u){ return new Request(u,{cache:"reload"}); })); })   /* «reload»: nunca guarda una copia vieja que tenga el navegador */
-      .then(function(){ guardarOcr(); return self.skipWaiting(); })
+      .then(function(){ return self.skipWaiting(); })
       .catch(function(){ return self.skipWaiting(); })
   );
 });
-
-/* Se baja en segundo plano (sin frenar la instalación) para tenerlo sin señal en el piso */
-function guardarOcr(){
-  caches.open(COCR).then(function(c){
-    return c.match("./ocr_pack.json").then(function(hit){ return hit || c.add("./ocr_pack.json"); });
-  }).catch(function(){});
-}
 
 self.addEventListener("activate", function(e){
   e.waitUntil(
@@ -87,7 +80,7 @@ self.addEventListener("fetch", function(e){
       return fetch(req).then(function(res){
         if(res && res.status===200 && res.type==="basic"){
           var copy=res.clone();
-          caches.open(/ocr_pack\.json$/.test(new URL(req.url).pathname) ? COCR : C).then(function(c){ c.put(req, copy); });
+          caches.open(/\/ocr\//.test(new URL(req.url).pathname) ? COCR : C).then(function(c){ c.put(req, copy); });
         }
         return res;
       });
